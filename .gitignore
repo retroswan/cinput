@@ -1,5 +1,7 @@
 .vscode/settings.json
 bin/Debug/*
 bin/Release/*
-src/*.o
+*.o
+*.so
 .env
+valgrind.txt

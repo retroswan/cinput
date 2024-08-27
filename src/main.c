@@ -1,21 +1,15 @@
-#include <stdio.h>
-#include "FizzBuzz.h"
+#include <SDL2/SDL.h>
+#include <Cinput/Cinput.h>
 
 int main(void)
 {
-    printf("Hello, world!\n");
+    SDL_Init(0);
     
-    char result[9];
-    for (int i = 1; i <= 15; i++) {
-        FizzBuzz(i, result);
-        
-        printf(
-            "%s\n",
-            result
-        );
-    }
+    SDL_Log("Hello, world!\n");
     
-    printf("Goodbye, world!\n");
+    SDL_Log("Goodbye, world!\n");
+    
+    SDL_Quit();
     
     return 0;
 }

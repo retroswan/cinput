@@ -4,17 +4,20 @@ CC?=gcc
 CFLAGS_DEBUG?=-g -pedantic -std=c99 -Wall -Wextra -Wmissing-prototypes -Wold-style-definition
 CFLAGS_RELEASE?=-O2 -std=c99
 CFLAGS?=${CFLAGS_DEBUG}
+EXT?=so
+INCS?=
+LIBS?=
 PLATFORM?=Debug
-
-SRC:=$(wildcard src/*.c src/**/*.c src/**/**/*.c src/**/**/**/*.c src/**/**/**/**/*.c)
-OBJ:=$(patsubst src/%.c, src/%.o, $(SRC))
+RPATH?=-Wl,-rpath=./
 
 .PHONY=build
 build:
 	mkdir -p bin
 	mkdir -p bin/${PLATFORM}
-	${foreach file, ${SRC}, ${CC} ${CFLAGS} -c ${file} -o ${patsubst src/%.c, src/%.o, ${file}} ${INCS} &&} echo
-	${CC} ${CFLAGS} ${OBJ} -o bin/${PLATFORM}/main ${LIBS} ${RPATH}
+	${CC} ${CFLAGS} -c src/Cinput/Cinput.c -o src/Cinput/Cinput.o ${INCS}
+	${CC} src/Cinput/Cinput.o -shared -o bin/${PLATFORM}/libcinput.${EXT} ${LIBS}
+	${CC} ${CFLAGS} -c src/main.c -o src/main.o ${INCS} -I`pwd`/include
+	${CC} src/main.o -o bin/${PLATFORM}/main ${LIBS} -L`pwd`/bin/${PLATFORM} -lcinput ${RPATH}
 
 .PHONY=debug
 debug:
@@ -26,6 +29,10 @@ release:
 
 .PHONY=clean
 clean:
-	rm -f ${OBJ}
-	rm -f bin/Debug/main
-	rm -f bin/Release/main
+	rm -f src/Cinput/Cinput.o
+	rm -f src/main.o
+	rm -rf bin
+
+.PHONY=valgrind
+valgrind:
+	valgrind --leak-check=full bin/Debug/main &> valgrind.txt
